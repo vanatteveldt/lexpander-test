@@ -2,7 +2,7 @@
 library(tidyverse)
 library(manifestoR)
 
-mp_setapikey(key.file = "manifesto_apikey.txt")
+mp_setapikey(key.file = here("data/raw-private/manifesto_apikey.txt"))
 mp_use_corpus_version(versionid = 20150708174629)
 
 # codebook: https://manifesto-project.wzb.eu/down/datasets/pimpo/PImPo_codebook.pdf
@@ -36,10 +36,14 @@ corpus = annotations %>%
 
 
 # Add verbatim to the immigration dataset
-d = left_join(annotations, corpus) %>% filter(!is.na(pos_corpus)) %>% left_join(partynames)
+d = left_join(annotations, corpus) %>% filter(!is.na(pos_corpus))# %>% left_join(partynames)
 d_nl = d %>%
   filter(country == 22) %>%
-  select(date, party, partyname, pos_corpus, topic, direction, text)
-
-
+  select(date, party, pos_corpus, topic, direction, text)
 write_csv(d_nl, here("data/intermediate/d_nl.csv"))
+
+d_en = d %>%
+  filter(country %in% c(61, 62, 63, 64)) %>%
+  select(date, country, party, pos_corpus, topic, direction, text)
+write_csv(d_en, here("data/intermediate/d_en.csv"))
+
